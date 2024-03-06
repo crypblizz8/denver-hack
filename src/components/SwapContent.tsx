@@ -1,51 +1,48 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Modal,
   View,
   Text,
   TextInput,
-  Button,
-  Dimensions,
-  StyleSheet,
   Pressable,
+  StyleSheet,
+  Dimensions,
 } from "react-native";
-import SwapContent from "../components/SwapContent";
 
 const halfScreenHeight = Dimensions.get("window").height / 2;
 
-interface TemplateModalProps {
-  setModalVisible: (modalVisible: boolean) => void;
-  modalVisible: boolean;
-}
+const SwapContent = () => {
+  const [tokenFrom, setTokenFrom] = useState("");
+  const [tokenTo, setTokenTo] = useState("");
 
-const TemplateModal = ({
-  setModalVisible,
-  modalVisible,
-}: TemplateModalProps) => {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible);
-      }}
-    >
-      <View style={styles.centeredView}>
-        <View>
-          <SwapContent />
+    <View style={styles.modalView}>
+      <Text style={styles.modalTitle}>Swap Tokens</Text>
 
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(!modalVisible)}
-          >
-            <Text style={styles.textStyle}>Close</Text>
-          </Pressable>
-        </View>
+      {/* Token From Input */}
+      <TextInput
+        style={styles.input}
+        onChangeText={setTokenFrom}
+        value={tokenFrom}
+        placeholder="From Token (e.g., ETH)"
+      />
 
-        {/* Close Button */}
-      </View>
-    </Modal>
+      {/* Token To Input */}
+      <TextInput
+        style={styles.input}
+        onChangeText={setTokenTo}
+        value={tokenTo}
+        placeholder="To Token (e.g., DAI)"
+      />
+
+      {/* Get Quote Button */}
+      <Pressable
+        style={[styles.button, styles.buttonGetQuote]}
+        onPress={() => console.log("Fetching quote...")}
+      >
+        <Text style={styles.textStyle}>Get Quote</Text>
+      </Pressable>
+      
+    </View>
   );
 };
 
@@ -104,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TemplateModal;
+export default SwapContent;

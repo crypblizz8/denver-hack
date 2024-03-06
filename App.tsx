@@ -16,6 +16,7 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import SwapComponent from "./src/components/Swap";
 import Swap from "./src/components/Swap";
 import TemplateModal from "./src/modals/TemplateModal";
+import SwipeButton from "./src/components/SwipeButton";
 
 export default function App() {
   const [address, setAddress] = useState("");
@@ -85,11 +86,14 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headingText}>WalletSwap Kit</Text>
+      <Text style={styles.headingText}>WalletKit</Text>
       <Text style={{ marginBottom: 20 }}>{address}</Text>
       <View style={styles.actionsRow}>
         <View style={styles.flexCenter}>
-          <Pressable style={styles.roundedBlueButton}>
+          <Pressable
+            style={styles.roundedBlueButton}
+            onPress={() => setModalVisible(true)}
+          >
             <Text style={{ color: "white" }}>+</Text>
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>Swap</Text>
@@ -117,10 +121,31 @@ export default function App() {
           <Text style={{ color: "black", marginTop: 4 }}>Sign</Text>
         </View>
       </View>
-
+      <View style={styles.secondActionsRow}>
+        <View style={styles.flexCenter}>
+          <Pressable
+            style={styles.roundedBlueButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={{ color: "white" }}>+</Text>
+          </Pressable>
+          <Text style={{ color: "black", marginTop: 4 }}>Tx</Text>
+        </View>
+        <View style={styles.twoButtonflexCenter}>
+          <Pressable
+            style={styles.roundedBlueButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={{ color: "white" }}>+</Text>
+          </Pressable>
+          <Text style={{ color: "black", marginTop: 4 }}>NFT</Text>
+        </View>
+      </View>
       {/* <Button title="Sign" onPress={() => signMessage()} /> */}
       {/* <Button title="FetchHaripie" onPress={() => fetchHarpie()} /> */}
       {/* <Swap /> */}
+
+      {/* <SwipeButton /> */}
 
       <TemplateModal
         setModalVisible={setModalVisible}
@@ -149,18 +174,33 @@ const styles = StyleSheet.create({
     backgroundColor: "#3773F5",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#4A84F7", // A slightly lighter color than the background
+    // borderWidth: 1,
+    borderColor: "#4A84F7",
   },
   flexCenter: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
+  twoButtonflexCenter: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 32,
+  },
   actionsRow: {
     flexDirection: "row",
     display: "flex",
     justifyContent: "space-between",
+    // borderWidth: 1,
+    width: "75%",
+  },
+  secondActionsRow: {
+    marginVertical: 16,
+    flexDirection: "row",
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
     // borderWidth: 1,
     width: "75%",
   },
