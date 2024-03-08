@@ -15,8 +15,10 @@ import {
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import SwapComponent from "./src/components/Swap";
 import Swap from "./src/components/Swap";
-import TemplateModal from "./src/modals/TemplateModal";
+import GenericModal from "./src/modals/GenericModal";
 import SwipeButton from "./src/components/SwipeButton";
+import QRCodeAddress from "./src/components/QRCodeAddress";
+import { ModalStates } from "./src/utils/constants";
 
 export default function App() {
   const [address, setAddress] = useState("");
@@ -24,6 +26,7 @@ export default function App() {
 
   //Modal Actions
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentModalState, setCurrentModalState] = useState("");
 
   // ToDo: Move to mmkv state storage.
   // Generates a new one each state load for demo purposes
@@ -35,6 +38,10 @@ export default function App() {
   //   baseGoerli,
   //   xdc,
   //   xdcTestnet;
+  const openModalWithState = (state: string) => {
+    setCurrentModalState(state);
+    setModalVisible(true);
+  };
 
   const walletClient = createWalletClient({
     account,
@@ -92,21 +99,24 @@ export default function App() {
         <View style={styles.flexCenter}>
           <Pressable
             style={styles.roundedBlueButton}
-            onPress={() => setModalVisible(true)}
+            onPress={() => openModalWithState("SWAP")}
           >
             <Text style={{ color: "white" }}>+</Text>
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>Swap</Text>
         </View>
-
+        {/* 
         <View style={styles.flexCenter}>
           <Pressable style={styles.roundedBlueButton}>
             <Text style={{ color: "white" }}>+</Text>
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>Send</Text>
-        </View>
+        </View> */}
         <View style={styles.flexCenter}>
-          <Pressable style={styles.roundedBlueButton}>
+          <Pressable
+            style={styles.roundedBlueButton}
+            onPress={() => openModalWithState("RECEIVE")}
+          >
             <Text style={{ color: "white" }}>+</Text>
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>Receive</Text>
@@ -147,9 +157,11 @@ export default function App() {
 
       {/* <SwipeButton /> */}
 
-      <TemplateModal
+      <GenericModal
         setModalVisible={setModalVisible}
         modalVisible={modalVisible}
+        currentModalState={currentModalState}
+        setCurrentModalState={setCurrentModalState}
       />
     </View>
   );

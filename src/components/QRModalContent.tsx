@@ -1,51 +1,39 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Modal,
   View,
   Text,
   TextInput,
-  Button,
-  Dimensions,
-  StyleSheet,
   Pressable,
+  StyleSheet,
+  Dimensions,
 } from "react-native";
-import SwapContent from "../components/SwapContent";
+import QRCode from "react-native-qrcode-svg";
 
 const halfScreenHeight = Dimensions.get("window").height / 2;
 
-interface TemplateModalProps {
+interface QRModalContentProps {
   setModalVisible: (modalVisible: boolean) => void;
   modalVisible: boolean;
 }
-
-const TemplateModal = ({
+const QRModalContent = ({
   setModalVisible,
   modalVisible,
-}: TemplateModalProps) => {
+}: QRModalContentProps) => {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible);
-      }}
-    >
-      <View style={styles.centeredView}>
-        <View>
-          <SwapContent />
+    <View style={styles.modalView}>
+      <Text style={styles.modalTitle}>Receive</Text>
 
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(!modalVisible)}
-          >
-            <Text style={styles.textStyle}>Close</Text>
-          </Pressable>
-        </View>
-
-        {/* Close Button */}
+      <View style={{ marginVertical: 16 }}>
+        <QRCode size={200} />
       </View>
-    </Modal>
+
+      <Pressable
+        style={[styles.button, styles.buttonClose]}
+        onPress={() => setModalVisible(!modalVisible)}
+      >
+        <Text style={styles.textStyle}>Close</Text>
+      </Pressable>
+    </View>
   );
 };
 
@@ -95,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#4CAF50",
   },
   buttonClose: {
-    backgroundColor: "#F44336",
+    backgroundColor: "#3773F5",
   },
   textStyle: {
     color: "white",
@@ -104,4 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TemplateModal;
+export default QRModalContent;

@@ -10,7 +10,15 @@ import {
 
 const halfScreenHeight = Dimensions.get("window").height / 2;
 
-const SwapContent = () => {
+interface SwapModalContentProps {
+  setModalVisible: (modalVisible: boolean) => void;
+  modalVisible: boolean;
+}
+
+const SwapContent = ({
+  setModalVisible,
+  modalVisible,
+}: SwapModalContentProps) => {
   const [tokenFrom, setTokenFrom] = useState("");
   const [tokenTo, setTokenTo] = useState("");
 
@@ -41,7 +49,13 @@ const SwapContent = () => {
       >
         <Text style={styles.textStyle}>Get Quote</Text>
       </Pressable>
-      
+
+      <Pressable
+        style={[styles.button, styles.buttonClose]}
+        onPress={() => setModalVisible(!modalVisible)}
+      >
+        <Text style={styles.textStyle}>Close</Text>
+      </Pressable>
     </View>
   );
 };
