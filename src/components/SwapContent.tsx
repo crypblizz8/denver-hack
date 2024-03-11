@@ -8,8 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 
-const halfScreenHeight = Dimensions.get("window").height / 2;
-
+const halfScreenHeight = Dimensions.get("window").height * 0.75;
 interface SwapModalContentProps {
   setModalVisible: (modalVisible: boolean) => void;
   modalVisible: boolean;
@@ -27,20 +26,57 @@ const SwapContent = ({
       <Text style={styles.modalTitle}>Swap Tokens</Text>
 
       {/* Token From Input */}
-      <TextInput
-        style={styles.input}
-        onChangeText={setTokenFrom}
-        value={tokenFrom}
-        placeholder="From Token (e.g., ETH)"
-      />
+      <View
+        style={{
+          display: "flex",
+          width: "100%",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            width: 30,
+            height: 30,
+            backgroundColor: "grey",
+            borderRadius: 15,
+            marginRight: 10,
+          }}
+        />
+        <TextInput
+          autoFocus
+          // keyboardType="numeric"
+          style={styles.input}
+          onChangeText={setTokenFrom}
+          value={tokenFrom}
+          placeholder="From Token (e.g., ETH)"
+        />
+      </View>
 
-      {/* Token To Input */}
-      <TextInput
-        style={styles.input}
-        onChangeText={setTokenTo}
-        value={tokenTo}
-        placeholder="To Token (e.g., DAI)"
-      />
+      <View
+        style={{
+          display: "flex",
+          width: "100%",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            width: 30,
+            height: 30,
+            backgroundColor: "grey",
+            borderRadius: 15,
+            marginRight: 10,
+          }}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={setTokenTo}
+          value={tokenTo}
+          placeholder="To Token (e.g., DAI)"
+        />
+      </View>
 
       {/* Get Quote Button */}
       <Pressable
@@ -87,7 +123,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    width: "100%",
+    width: "85%",
     height: 40,
     marginVertical: 8,
     borderWidth: 1,

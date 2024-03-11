@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
+import { storage } from "../../App";
 
 const halfScreenHeight = Dimensions.get("window").height / 2;
 
@@ -19,11 +20,24 @@ const QRModalContent = ({
   setModalVisible,
   modalVisible,
 }: QRModalContentProps) => {
+  const currentAddress = storage.getString("dev.address");
+
   return (
     <View style={styles.modalView}>
       <Text style={styles.modalTitle}>Receive</Text>
 
-      <View style={{ marginVertical: 16 }}>
+      <View
+        style={{
+          marginVertical: 10,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ textAlign: "center", marginVertical: 10 }}>
+          {" "}
+          {currentAddress}{" "}
+        </Text>
         <QRCode size={200} />
       </View>
 
@@ -46,7 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 35,
+    padding: 24,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -61,7 +75,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   input: {
     width: "100%",

@@ -1,16 +1,8 @@
-import React, { useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  TextInput,
-  Button,
-  Dimensions,
-  StyleSheet,
-  Pressable,
-} from "react-native";
+import React from "react";
+import { Modal, View, Dimensions, StyleSheet } from "react-native";
 import SwapContent from "../components/SwapContent";
 import QRModalContent from "../components/QRModalContent";
+import SignModalContent from "../components/SignModalContent";
 const halfScreenHeight = Dimensions.get("window").height / 2;
 
 interface TemplateModalProps {
@@ -20,28 +12,18 @@ interface TemplateModalProps {
   setCurrentModalState?: (currentModalState: string) => void;
 }
 
-const ModalContentComponents = {
-  SWAP: SwapContent,
-  RECEIVE: QRModalContent,
-};
-
 const GenericModal = ({
   setModalVisible,
   modalVisible,
   currentModalState,
   setCurrentModalState,
 }: TemplateModalProps) => {
-  console.log("currentModalState", currentModalState);
-  // const ModalContent =
-  //   ModalContentComponents[currentModalState] || (() => <View />);
-
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
-        // setCurrentModalState(null)
         setModalVisible(!modalVisible);
       }}
     >
@@ -56,6 +38,12 @@ const GenericModal = ({
           )}
           {currentModalState === "RECEIVE" && (
             <QRModalContent
+              setModalVisible={setModalVisible}
+              modalVisible={modalVisible}
+            />
+          )}
+          {currentModalState === "SIGN" && (
+            <SignModalContent
               setModalVisible={setModalVisible}
               modalVisible={modalVisible}
             />

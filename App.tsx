@@ -1,65 +1,56 @@
 import "fastestsmallesttextencoderdecoder";
-import "@walletconnect/react-native-compat";
-import { StatusBar } from "expo-status-bar";
+import "react-native-get-random-values";
 import { useEffect, useState } from "react";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 import { createWalletClient, http } from "viem";
-import {
-  mainnet,
-  base,
-  goerli,
-  baseGoerli,
-  xdc,
-  xdcTestnet,
-} from "viem/chains";
+import { goerli } from "viem/chains";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import SwapComponent from "./src/components/Swap";
-import Swap from "./src/components/Swap";
 import GenericModal from "./src/modals/GenericModal";
-import SwipeButton from "./src/components/SwipeButton";
-import QRCodeAddress from "./src/components/QRCodeAddress";
-import { ModalStates } from "./src/utils/constants";
+import { MMKV } from "react-native-mmkv";
+import { fetchWallet } from "./src/hooks/getBalance";
+// import { fetchWalletBalanceData } from "./src/hooks/getBalance";
+
+export const storage = new MMKV();
 
 export default function App() {
-  const [address, setAddress] = useState("");
-  const privateKey = generatePrivateKey();
-
   //Modal Actions
   const [modalVisible, setModalVisible] = useState(false);
   const [currentModalState, setCurrentModalState] = useState("");
+  const [address, setAddress] = useState("");
+  const [balance, setBalance] = useState();
+  const [account, setAccount] = useState(null); // New state to hold account information
 
-  // ToDo: Move to mmkv state storage.
-  // Generates a new one each state load for demo purposes
-  const account = privateKeyToAccount(privateKey);
+  useEffect(() => {
+    let privateKey = storage.getString("dev.pkey");
+    if (!privateKey) {
+      privateKey = generatePrivateKey();
+      storage.set("dev.pkey", privateKey);
+      console.log("New privateKey generated and cached:", privateKey);
+    } else {
+      console.log("Using cached privateKey:", privateKey);
+    }
 
-  // const chainList = mainnet,
-  //   goerli,
-  //   base,
-  //   baseGoerli,
-  //   xdc,
-  //   xdcTestnet;
-  const openModalWithState = (state: string) => {
-    setCurrentModalState(state);
-    setModalVisible(true);
-  };
+    // Convert privateKey to account and set up wallet client here
+    const account = privateKeyToAccount(privateKey);
+    console.log("Account address:", account.address);
+    storage.set("dev.address", account.address);
+    setAccount(account);
+  }, []);
 
-  const walletClient = createWalletClient({
-    account,
-    chain: goerli,
-    transport: http(),
-  });
+  const walletClient =
+    account &&
+    createWalletClient({
+      account,
+      chain: goerli, // Assuming 'goerli' is defined somewhere
+      transport: http(), // Assuming this is defined somewhere
+    });
 
-  const getAddresses = async () => {
-    const [address] = await walletClient.getAddresses();
-    console.log("Address", address);
-    setAddress(address);
-    return;
-  };
+  const currentAddress = storage.getString("dev.address");
 
   const signMessage = async () => {
     const signature_1 = await walletClient.signMessage({
       account,
-      message: "hello world",
+      message: "hell2o world2",
     });
     console.log("signature_1", signature_1);
     return;
@@ -86,15 +77,34 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!address) {
-      getAddresses();
-    }
-  }, [address]);
+    const fetchData = async () => {
+      try {
+        console.log("currentAddress1 ", typeof currentAddress);
+        const balanceRes = await fetchWallet(currentAddress);
+        const res = JSON.stringify(balanceRes);
+        setBalance(res);
+      } catch (error) {
+        console.error("Failed to fetch wallet balance:", error);
+        // Handle any errors here, such as setting an error state
+      }
+    };
 
+    if (currentAddress) {
+      fetchData();
+    }
+  }, [currentAddress]);
+
+  const openModalWithState = (state: string) => {
+    setCurrentModalState(state);
+    setModalVisible(true);
+  };
+
+  // Scrollview to refresh state?
   return (
     <View style={styles.container}>
       <Text style={styles.headingText}>WalletKit</Text>
-      <Text style={{ marginBottom: 20 }}>{address}</Text>
+      <Text style={{ marginBottom: 10 }}>{currentAddress}</Text>
+      <Text style={{ marginBottom: 20 }}>Balance: {balance} ETH</Text>
       <View style={styles.actionsRow}>
         <View style={styles.flexCenter}>
           <Pressable
@@ -105,13 +115,7 @@ export default function App() {
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>Swap</Text>
         </View>
-        {/* 
-        <View style={styles.flexCenter}>
-          <Pressable style={styles.roundedBlueButton}>
-            <Text style={{ color: "white" }}>+</Text>
-          </Pressable>
-          <Text style={{ color: "black", marginTop: 4 }}>Send</Text>
-        </View> */}
+
         <View style={styles.flexCenter}>
           <Pressable
             style={styles.roundedBlueButton}
@@ -121,17 +125,28 @@ export default function App() {
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>Receive</Text>
         </View>
+
         <View style={styles.flexCenter}>
           <Pressable
             style={styles.roundedBlueButton}
-            onPress={() => setModalVisible(true)}
+            // onPress={() => fetchWalletBalanceData()}
+          >
+            <Text style={{ color: "white" }}>+</Text>
+          </Pressable>
+          <Text style={{ color: "black", marginTop: 4 }}>Send</Text>
+        </View>
+
+        <View style={styles.flexCenter}>
+          <Pressable
+            style={styles.roundedBlueButton}
+            onPress={() => openModalWithState("SIGN")}
           >
             <Text style={{ color: "white" }}>+</Text>
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>Sign</Text>
         </View>
       </View>
-      <View style={styles.secondActionsRow}>
+      {/* <View style={styles.secondActionsRow}>
         <View style={styles.flexCenter}>
           <Pressable
             style={styles.roundedBlueButton}
@@ -150,11 +165,9 @@ export default function App() {
           </Pressable>
           <Text style={{ color: "black", marginTop: 4 }}>NFT</Text>
         </View>
-      </View>
+      </View> */}
       {/* <Button title="Sign" onPress={() => signMessage()} /> */}
       {/* <Button title="FetchHaripie" onPress={() => fetchHarpie()} /> */}
-      {/* <Swap /> */}
-
       {/* <SwipeButton /> */}
 
       <GenericModal
