@@ -10,6 +10,7 @@ import {
   walletClient,
 } from "../utils/storage";
 import BlueButton from "../components/BlueButton";
+import RedButton from "../components/RedButton";
 
 const HomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,7 +38,6 @@ const HomeScreen = ({ navigation }) => {
   });
 
   const currentAddress = storage ? storage.getString("dev.address") : null;
-  console.log("currentAddress", currentAddress);
 
   const getBalance = async () => {
     if (!currentAddress) return 0;
@@ -101,7 +101,7 @@ const HomeScreen = ({ navigation }) => {
           description="Transactions"
           onPress={() => navigation.navigate("TX")}
         />
-        <BlueButton description="Clear" onPress={() => clearStorage()} />
+        <RedButton description="Clear" onPress={() => clearStorage()} />
       </View>
 
       <GenericModal
