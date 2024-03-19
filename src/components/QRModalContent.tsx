@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { storage } from "../../App";
+import { storage } from "../utils/storage";
 
 const halfScreenHeight = Dimensions.get("window").height / 2;
 

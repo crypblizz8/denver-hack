@@ -1,20 +1,48 @@
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import GenericModal from "../modals/GenericModal";
-import { MMKV } from "react-native-mmkv";
 import { useState, useEffect } from "react";
-import { createWalletClient, http } from "viem";
+import {
+  createPublicClient,
+  createWalletClient,
+  formatEther,
+  http,
+} from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { goerli } from "viem/chains";
-
-export const storage = new MMKV();
+import { storage } from "../utils/storage";
+import BlueButton from "../components/BlueButton";
 
 const HomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentModalState, setCurrentModalState] = useState("");
   const [address, setAddress] = useState("");
-  const [balance, setBalance] = useState();
+  const [balance, setBalance] = useState("");
   const [txData, setTxData] = useState();
   const [account, setAccount] = useState(null); // New state to hold account information
+
+  const publicClient = createPublicClient({
+    chain: goerli,
+    transport: http(),
+  });
+
+  const walletClient =
+    account &&
+    createWalletClient({
+      account,
+      chain: goerli, // Assuming 'goerli' is defined somewhere
+      transport: http(), // Assuming this is defined somewhere
+    });
+
+  const getBalance = async () => {
+    console.log("gettingBalance2");
+    const balance = await publicClient.getBalance({
+      address: "0x595E8C04fc0DEE37e218b2f7d54d320aa17e6D5f",
+    });
+    console.log("balance2...", balance);
+
+    const balanceEther = formatEther(balance);
+    setBalance(balanceEther);
+  };
 
   useEffect(() => {
     let privateKey = storage.getString("dev.pkey");
@@ -33,13 +61,12 @@ const HomeScreen = ({ navigation }) => {
     setAccount(account);
   }, []);
 
-  const walletClient =
-    account &&
-    createWalletClient({
-      account,
-      chain: goerli, // Assuming 'goerli' is defined somewhere
-      transport: http(), // Assuming this is defined somewhere
-    });
+  useEffect(() => {
+    if (account) {
+      console.log("Account is set, fetching balance...");
+      getBalance();
+    }
+  }, [balance]);
 
   const currentAddress = storage.getString("dev.address");
 
@@ -48,60 +75,44 @@ const HomeScreen = ({ navigation }) => {
     setModalVisible(true);
   };
 
+  const sendTransaction = async () => {
+    console.log("Sending transaction...");
+    const hash = await walletClient.sendTransaction({
+      account,
+      to: "0xb4CE8dcf4312dB84f428fD5293d4a0dDe35Ec106",
+      value: 1000000000000000,
+    });
+    console.log("hash", hash);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.headingText}>WalletKit</Text>
       <Text style={{ marginBottom: 10 }}>{currentAddress}</Text>
-      {/* <Text style={{ marginBottom: 20 }}>Balance: {balance} ETH</Text> */}
+      <Text style={{ marginBottom: 20 }}>Balance: {balance} ETH</Text>
       <View style={styles.actionsRow}>
-        <View style={styles.flexCenter}>
-          <Pressable
-            style={styles.roundedBlueButton}
-            onPress={() => openModalWithState("SWAP")}
-          >
-            <Text style={{ color: "white" }}>+</Text>
-          </Pressable>
-          <Text style={{ color: "black", marginTop: 4 }}>Swap</Text>
-        </View>
-
-        <View style={styles.flexCenter}>
-          <Pressable
-            style={styles.roundedBlueButton}
-            onPress={() => openModalWithState("RECEIVE")}
-          >
-            <Text style={{ color: "white" }}>+</Text>
-          </Pressable>
-          <Text style={{ color: "black", marginTop: 4 }}>Receive</Text>
-        </View>
-
-        <View style={styles.flexCenter}>
-          <Pressable
-            style={styles.roundedBlueButton}
-            // onPress={() => fetchWalletBalanceData()}
-          >
-            <Text style={{ color: "white" }}>+</Text>
-          </Pressable>
-          <Text style={{ color: "black", marginTop: 4 }}>Send</Text>
-        </View>
+        <BlueButton
+          description="Swap"
+          onPress={() => openModalWithState("SWAP")}
+        />
+        <BlueButton
+          description="Receive"
+          onPress={() => openModalWithState("RECEIVE")}
+        />
+        <BlueButton description="Send" onPress={() => sendTransaction()} />
       </View>
       <View style={styles.actionsRow}>
-        <View style={styles.flexCenter}>
-          <Pressable
-            style={styles.roundedBlueButton}
+        <View style={styles.halfWidth}>
+          <BlueButton
+            description="Sign"
             onPress={() => openModalWithState("SIGN")}
-          >
-            <Text style={{ color: "white" }}>+</Text>
-          </Pressable>
-          <Text style={{ color: "black", marginTop: 4 }}>Sign</Text>
+          />
         </View>
-        <View style={styles.flexCenter}>
-          <Pressable
-            style={styles.roundedBlueButton}
+        <View style={styles.halfWidth}>
+          <BlueButton
+            description="Transactions"
             onPress={() => navigation.navigate("TX")}
-          >
-            <Text style={{ color: "white" }}>+</Text>
-          </Pressable>
-          <Text style={{ color: "black", marginTop: 4 }}>Transactions</Text>
+          />
         </View>
       </View>
 
@@ -129,41 +140,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 10,
   },
-  roundedBlueButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#3773F5",
-    justifyContent: "center",
-    alignItems: "center",
-    // borderWidth: 1,
-    borderColor: "#4A84F7",
-  },
-  flexCenter: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  twoButtonflexCenter: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 32,
-  },
   actionsRow: {
     flexDirection: "row",
     display: "flex",
     justifyContent: "space-between",
-    // borderWidth: 1,
     width: "75%",
+    marginVertical: 10,
   },
-  secondActionsRow: {
-    marginVertical: 16,
-    flexDirection: "row",
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    // borderWidth: 1,
-    width: "75%",
+  halfWidth: {
+    width: "50%",
   },
 });
