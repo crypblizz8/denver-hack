@@ -1,10 +1,22 @@
 import React from "react";
-import { Modal, View, Dimensions, StyleSheet } from "react-native";
+import { View, Dimensions, StyleSheet } from "react-native";
 import SwapContent from "../components/SwapContent";
 import QRModalContent from "../components/QRModalContent";
 import SignModalContent from "../components/SignModalContent";
+import SendModalContent from "../components/SendModalContent";
 const halfScreenHeight = Dimensions.get("window").height / 2;
+import Animated, {
+  runOnJS,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+} from "react-native-gesture-handler";
 
+import Modal from "react-native-modal";
 interface TemplateModalProps {
   setModalVisible: (modalVisible: boolean) => void;
   modalVisible: boolean;
@@ -18,16 +30,34 @@ const GenericModal = ({
   currentModalState,
   setCurrentModalState,
 }: TemplateModalProps) => {
+  const translateY = useSharedValue(0);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
   return (
     <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible);
-      }}
+      style={{ margin: 0 }}
+      swipeDirection="down"
+      onSwipeComplete={toggleModal}
+      isVisible={modalVisible}
     >
       <View style={styles.centeredView}>
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            backgroundColor: "grey",
+            height: 5,
+            width: 50,
+            position: "relative",
+            top: 15,
+            left: "43%",
+            zIndex: 1,
+            borderRadius: 5,
+          }}
+        />
         <View>
           {!currentModalState && <View />}
           {currentModalState === "SWAP" && (
@@ -48,6 +78,12 @@ const GenericModal = ({
               modalVisible={modalVisible}
             />
           )}
+          {currentModalState === "SEND" && (
+            <SendModalContent
+              setModalVisible={setModalVisible}
+              modalVisible={modalVisible}
+            />
+          )}
         </View>
       </View>
     </Modal>
@@ -63,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 35,
+    // padding: 35,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {

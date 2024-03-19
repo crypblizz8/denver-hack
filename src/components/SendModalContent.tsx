@@ -6,40 +6,60 @@ import {
   Pressable,
   StyleSheet,
   Dimensions,
+  KeyboardAvoidingView,
 } from "react-native";
-import QRCode from "react-native-qrcode-svg";
 import { storage } from "../utils/storage";
+import { sendTransaction } from "../hooks/sendTransactions";
 
-const halfScreenHeight = Dimensions.get("window").height / 2;
+const halfScreenHeight = Dimensions.get("window").height * 0.7;
 
-interface QRModalContentProps {
+interface SendModalContentProps {
   setModalVisible: (modalVisible: boolean) => void;
   modalVisible: boolean;
 }
-const QRModalContent = ({
+const SendModalContent = ({
   setModalVisible,
   modalVisible,
-}: QRModalContentProps) => {
-  const currentAddress = storage.getString("dev.address");
+}: SendModalContentProps) => {
+  const [recipientAddress, setRecipientAddress] = useState("");
+
+  const account = storage ? storage.getString("dev.account") : null;
+  console.log("account", account);
 
   return (
-    <View style={styles.modalView}>
-      <Text style={styles.modalTitle}>Receive</Text>
+    <KeyboardAvoidingView style={styles.modalView}>
+      <Text style={styles.modalTitle}>Send</Text>
 
       <View
         style={{
           marginVertical: 10,
           display: "flex",
+          width: "100%",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
         <Text style={{ textAlign: "center", marginVertical: 10 }}>
-          {" "}
-          {currentAddress}{" "}
+          Send ETH to an address
         </Text>
-        <QRCode size={200} />
+        <TextInput
+          autoFocus
+          style={styles.input}
+          value={recipientAddress}
+          onChangeText={(text) => setRecipientAddress(text)}
+          placeholder="0x1234..."
+          autoCapitalize="none"
+        />
       </View>
+
+      <Pressable
+        style={[styles.button, styles.buttonClose]}
+        onPress={() =>
+          sendTransaction(account, "0x618C35bBD039945364E5BfA0BAC78082a2F7568d")
+        }
+      >
+        <Text style={styles.textStyle}>Send</Text>
+      </Pressable>
 
       {/* <Pressable
         style={[styles.button, styles.buttonClose]}
@@ -47,7 +67,7 @@ const QRModalContent = ({
       >
         <Text style={styles.textStyle}>Close</Text>
       </Pressable> */}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -106,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default QRModalContent;
+export default SendModalContent;

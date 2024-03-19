@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 
-const halfScreenHeight = Dimensions.get("window").height * 0.75;
+const halfScreenHeight = Dimensions.get("window").height * 0.7;
 interface SwapModalContentProps {
   setModalVisible: (modalVisible: boolean) => void;
   modalVisible: boolean;
@@ -86,12 +86,12 @@ const SwapContent = ({
         <Text style={styles.textStyle}>Get Quote</Text>
       </Pressable>
 
-      <Pressable
+      {/* <Pressable
         style={[styles.button, styles.buttonClose]}
         onPress={() => setModalVisible(!modalVisible)}
       >
         <Text style={styles.textStyle}>Close</Text>
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 };

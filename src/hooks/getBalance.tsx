@@ -12,7 +12,7 @@ export const fetchWallet = async (address: BalanceProps) => {
       {
         headers: {
           accept: "application/json",
-          authorization: `Basic emtfZGV2XzhiYWU1MDE2YjNlZjRhMjViZjE5MDZjNWY5ZmZjYzY4Og==`,
+          authorization: `Basic XXX==`,
         },
       }
     );

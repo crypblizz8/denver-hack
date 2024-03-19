@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 
-const halfScreenHeight = Dimensions.get("window").height / 2;
+const halfScreenHeight = Dimensions.get("window").height * 0.65;
 
 interface SignModalContentProps {
   setModalVisible: (modalVisible: boolean) => void;
@@ -37,6 +37,7 @@ const SignModalContent = ({
 
       <Text> Write a message to sign </Text>
       <TextInput
+        autoFocus
         style={styles.input}
         value={inputText} // Bind the inputText state to the TextInput value
         onChangeText={setInputText} // Update the inputText state on every change
@@ -48,13 +49,6 @@ const SignModalContent = ({
         onPress={() => setModalVisible(!modalVisible)}
       >
         <Text style={styles.textStyle}>Sign </Text>
-      </Pressable>
-
-      <Pressable
-        style={[styles.button, styles.buttonClose]}
-        onPress={() => setModalVisible(!modalVisible)}
-      >
-        <Text style={styles.textStyle}>Close</Text>
       </Pressable>
     </View>
   );
