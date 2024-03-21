@@ -5,16 +5,6 @@ import QRModalContent from "../components/QRModalContent";
 import SignModalContent from "../components/SignModalContent";
 import SendModalContent from "../components/SendModalContent";
 const halfScreenHeight = Dimensions.get("window").height / 2;
-import Animated, {
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-} from "react-native-gesture-handler";
 
 import Modal from "react-native-modal";
 interface TemplateModalProps {
@@ -30,8 +20,6 @@ const GenericModal = ({
   currentModalState,
   setCurrentModalState,
 }: TemplateModalProps) => {
-  const translateY = useSharedValue(0);
-
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
